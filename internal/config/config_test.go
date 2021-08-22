@@ -13,7 +13,7 @@ func TestLoadEnv(t *testing.T) {
 	os.Setenv(EnvConfigPath, "env.test")
 	expectedConfig := Config{
 		SomeUserName: "some-user-name",
-		SomeUserPass: "some-default-pass",
+		SomeUserPass: "some-default-value",
 	}
 	actualConfig, err := LoadEnv()
 	assert.Nil(err, "Error in loading the config file")

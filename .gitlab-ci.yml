@@ -1,0 +1,19 @@
+image: golang:1.17-buster
+
+before_script:
+  - mkdir -p $CI_PROJECT_DIR/go/gocache
+  - apt-get update -y && apt-get install -y curl make
+  - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.40.1
+  - chmod +x ./bin/golangci-lint
+
+after_script:
+  - echo "Done!!!"
+
+stages:
+  - test
+
+test:
+  stage: test
+  script:
+    - make test
+    - ./bin/golangci-lint run ./...
