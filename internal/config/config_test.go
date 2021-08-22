@@ -10,7 +10,7 @@ import (
 func TestLoadEnv(t *testing.T) {
 	assert := assert.New(t)
 
-	os.Setenv(EnvConfigPath, "env.test")
+	os.Setenv(EnvConfigPath, "testdata/env_test")
 	expectedConfig := Config{
 		SomeUserName: "some-user-name",
 		SomeUserPass: "some-default-value",
