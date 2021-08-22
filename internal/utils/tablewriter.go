@@ -20,39 +20,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package user
+package utils
 
 import (
-	cli "github.com/urfave/cli/v2"
-	"gitlab.com/ansrivas/go-analyze-git/internal/utils"
+	"os"
+	"strconv"
+
+	"github.com/olekukonko/tablewriter"
 )
 
-// UsersByPRsAndCommits represents a list of GenericIntDict
-type UsersByPRsAndCommits []utils.GenericIntDict
+// Renders any data in a nice tabular manner
+func RenderTable(tableData GenericIntDictList, headers []string) {
+	var data [][]string
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetBorder(true)
+	table.SetAutoWrapText(false)
 
-// User struct defines all the operations related to a user
-type User struct{}
-
-// Instantiate a new object of User type
-func New() *User {
-	return &User{}
-}
-
-// topKUsersByPRsAndCommits returns Top K active users sorted
-// by amount of PRs created and commits pushed
-func (u *User) topKUsersByPRsAndCommits(num int) error {
-	return nil
-}
-
-func (u *User) CmdTopKUsersByPRsAndCommits() *cli.Command {
-	return &cli.Command{
-		Name:    "topk-by-pc",
-		Aliases: []string{"t"},
-		Usage:   "Top K active users sorted by amount of PRs created and commits pushed",
-		Flags:   []cli.Flag{},
-		Action: func(*cli.Context) error {
-			k := 10
-			return u.topKUsersByPRsAndCommits(k)
-		},
+	for _, row := range tableData {
+		data = append(data, []string{row.Key, strconv.Itoa(row.Value)})
 	}
+	table.SetHeader(headers)
+	table.SetHeaderColor(
+		tablewriter.Colors{tablewriter.Bold},
+		tablewriter.Colors{tablewriter.Bold},
+	)
+
+	table.AppendBulk(data)
+	table.Render()
 }

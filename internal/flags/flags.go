@@ -20,39 +20,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package user
+package flags
 
 import (
-	cli "github.com/urfave/cli/v2"
-	"gitlab.com/ansrivas/go-analyze-git/internal/utils"
+	"github.com/urfave/cli/v2"
+	"gitlab.com/ansrivas/go-analyze-git/pkg/events"
 )
 
-// UsersByPRsAndCommits represents a list of GenericIntDict
-type UsersByPRsAndCommits []utils.GenericIntDict
-
-// User struct defines all the operations related to a user
-type User struct{}
-
-// Instantiate a new object of User type
-func New() *User {
-	return &User{}
-}
-
-// topKUsersByPRsAndCommits returns Top K active users sorted
-// by amount of PRs created and commits pushed
-func (u *User) topKUsersByPRsAndCommits(num int) error {
-	return nil
-}
-
-func (u *User) CmdTopKUsersByPRsAndCommits() *cli.Command {
-	return &cli.Command{
-		Name:    "topk-by-pc",
-		Aliases: []string{"t"},
-		Usage:   "Top K active users sorted by amount of PRs created and commits pushed",
-		Flags:   []cli.Flag{},
-		Action: func(*cli.Context) error {
-			k := 10
-			return u.topKUsersByPRsAndCommits(k)
-		},
+var (
+	ReposFileFlag = &cli.StringFlag{
+		Name:     "repos-file",
+		Usage:    "Path to the repos.csv file",
+		EnvVars:  []string{"REPOS_FILE"},
+		Required: true,
 	}
-}
+	EventsFileFlag = &cli.StringFlag{
+		Name:     "events-file",
+		Usage:    "Path to the events.csv file",
+		EnvVars:  []string{"EVENTS_FILE"},
+		Required: true,
+	}
+	CountFlag = &cli.IntFlag{
+		Name:    "count",
+		Usage:   "Maximum count to show",
+		Value:   10,
+		EnvVars: []string{"COUNT"},
+	}
+	EventTypeFlag = &cli.StringFlag{
+		Name:    "event-type",
+		Usage:   "Event type to analyze from ['WatchEvent']",
+		Value:   events.Watch,
+		EnvVars: []string{"EVENT_TYPE"},
+	}
+	JsonFlag = &cli.BoolFlag{
+		Name:    "json",
+		Usage:   "Render the result as json",
+		Value:   false,
+		EnvVars: []string{"JSON"},
+	}
+)
