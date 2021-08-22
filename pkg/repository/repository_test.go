@@ -21,3 +21,31 @@
 // SOFTWARE.
 
 package repository
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"gitlab.com/ansrivas/go-analyze-git/internal/utils"
+	"gitlab.com/ansrivas/go-analyze-git/pkg/events"
+)
+
+func TestTopKReposByEvents(t *testing.T) {
+	assert := assert.New(t)
+
+	repos := New()
+	count := 2
+	event := events.Watch
+	eventsFile := "testdata/events.csv"
+	reposFile := "testdata/repos.csv"
+	cache, err := repos.topKReposByEvents(count, event, eventsFile, reposFile)
+
+	expectedCache := make(map[string]int)
+	expectedCache["testrepo2"] = 3
+	expectedCache["testrepo1"] = 2
+	expected := utils.GenericIntDictListFromMap(expectedCache)
+	expected.SortByValue()
+
+	assert.Equal(cache, expected)
+	assert.Nil(err)
+}
