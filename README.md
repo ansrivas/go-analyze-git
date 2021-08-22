@@ -60,9 +60,9 @@ GLOBAL OPTIONS:
     | neeru1207/AI_Sudoku                 |     6 |
     | ErikCH/DevYouTubeList               |     6 |
     +-------------------------------------+-------+
-```
+    ```
 
 2. To print in json format
     ```bash
-    go-analyze-git repository tw --events-file ./data/events.csv --repos-file ./data/repos.csv  --json | jq
+        go-analyze-git repository tw --events-file ./data/events.csv --repos-file ./data/repos.csv  --json | jq
     ```
