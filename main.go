@@ -1,15 +1,15 @@
 package main
 
 import (
-	"flag"
+	"context"
 	"fmt"
-	"os/signal"
-	"syscall"
+	"sort"
+	"time"
 
 	"os"
 
-	figure "github.com/common-nighthawk/go-figure"
-	config "gitlab.com/ansrivas/go-analyze-git/internal/config"
+	"github.com/urfave/cli/v2"
+	"gitlab.com/ansrivas/go-analyze-git/pkg/app"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -23,40 +23,35 @@ var (
 	Version = ""
 )
 
-// setupConfigOrFatal loads all the variables from the environment variable.
-// At this point everything is read as a Key,Value in a map[string]string
-func setupConfigOrFatal() config.Config {
-	conf, err := config.LoadEnv()
-	if err != nil {
-
-		log.Fatal().Msgf("Failed to parse the environment variable. Error %s", err.Error())
-	}
-	return conf
-}
-
-func printBanner() {
-	myFigure := figure.NewFigure("go-analyze-git", "", true)
-	myFigure.Print()
-}
-
 // setupLogger will setup the zap json logging interface
 // if the --debug flag is passed, level will be debug
-func setupLogger(debug bool) {
+func setUpLogger(c *cli.Context) {
 
-	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	// zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	// zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	// if debug {
+	// 	zerolog.SetGlobalLevel(zerolog.DebugLevel)
+	// }
+
+	output := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
+	// output.FormatLevel = func(i interface{}) string {
+	// 	return strings.ToUpper(fmt.Sprintf("| %-6s|", i))
+	// }
+	// output.FormatMessage = func(i interface{}) string {
+	// 	return fmt.Sprintf("%s", i)
+	// }
+	// output.FormatFieldName = func(i interface{}) string {
+	// 	return fmt.Sprintf("%s:", i)
+	// }
+	// output.FormatFieldValue = func(i interface{}) string {
+	// 	return strings.ToUpper(fmt.Sprintf("%s", i))
+	// }
+	log.Logger = zerolog.New(output).With().Timestamp().Logger()
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
-	if debug {
+
+	if c.Bool("debug") {
+		fmt.Fprintf(c.App.Writer, "Setting the log level to debug")
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
-	}
-
-}
-
-// printVersionInfo just prints the build time and git commit/tag used
-// for this build
-func printVersionInfo(version bool) {
-	if version {
-		fmt.Printf("Version  : %s\nBuildTime: %s\n", Version, BuildTime)
-		os.Exit(0)
 	}
 }
 
@@ -64,23 +59,62 @@ func helloWorld() string {
 	return "Hello World"
 }
 
+func createApp() *app.App {
+	cliApp := app.New()
+	cliApp.Name = "go-analyze-git"
+	cliApp.Description = "Run analytics on git data set"
+	cliApp.Version = Version
+
+	cliApp.Authors = []*cli.Author{
+		{
+			Name:  "Ankur Srivastava",
+			Email: "ankur.srivastava@email.de",
+		},
+	}
+	cliApp.Flags = []cli.Flag{
+		&cli.BoolFlag{
+			Name:  "debug",
+			Usage: "Set the log level to debug",
+		},
+		&cli.BoolFlag{
+			Name:  "buildtime",
+			Usage: "time of this build",
+		},
+	}
+	cliApp.Before = func(c *cli.Context) error {
+		if c.IsSet("buildtime") {
+			fmt.Fprintf(c.App.Writer, "%v buildtime: %v\n", cliApp.Name, BuildTime)
+			return cli.Exit("", 0)
+		}
+		// Set up log level
+		setUpLogger(c)
+		return nil
+	}
+	cliApp.EnableBashCompletion = true
+	cliApp.Commands = []*cli.Command{
+		cliApp.User(),
+		cliApp.Repository(),
+	}
+	sort.Sort(cli.CommandsByName(cliApp.Commands))
+	return cliApp
+
+}
 func main() {
-	debug := flag.Bool("debug", false, "Set the log level to debug")
-	version := flag.Bool("version", false, "Display the BuildTime and Version of this binary")
-	flag.Parse()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-	setupConfigOrFatal()
-	printBanner()
-	printVersionInfo(*version)
-	setupLogger(*debug)
+	app := createApp()
+	err := app.RunWithContext(ctx, os.Args)
+	if err != nil {
+		log.Error().Msgf("Error in app run: %s", err)
+	}
 
-	errc := make(chan error)
-	go func() {
-		c := make(chan os.Signal, 2)
-		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
-		errc <- fmt.Errorf("%s", <-c)
-	}()
-
-	fmt.Println("Press ctrl-c to exit")
-	log.Info().Msgf("Exiting server. Message: %v", <-errc)
+	// errc := make(chan error)
+	// go func() {
+	// 	c := make(chan os.Signal, 2)
+	// 	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
+	// 	errc <- fmt.Errorf("%s", <-c)
+	// }()
+	// fmt.Println("Press ctrl-c to exit")
+	// log.Info().Msgf("Exiting server. Message: %v", <-errc)
 }
