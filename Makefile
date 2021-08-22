@@ -50,3 +50,8 @@ prof:	bench  ## Run the profiler.
 prof_svg:	clean	bench ## Run the profiler and generate image.
 	@echo "Do you have graphviz installed? sudo apt-get install graphviz."
 	@go tool pprof -svg bench.test cpu.prof > cpu.svg
+
+
+.PHONY: format
+format:
+	@gofmt -s -w .
