@@ -6,9 +6,10 @@ import (
 	"os/signal"
 	"syscall"
 
+	"os"
+
 	figure "github.com/common-nighthawk/go-figure"
 	config "gitlab.com/ansrivas/go-analyze-git/internal/config"
-	"os"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -68,12 +69,14 @@ func main() {
 	version := flag.Bool("version", false, "Display the BuildTime and Version of this binary")
 	flag.Parse()
 
+	setupConfigOrFatal()
+	printBanner()
 	printVersionInfo(*version)
 	setupLogger(*debug)
 
 	errc := make(chan error)
 	go func() {
-		c := make(chan os.Signal)
+		c := make(chan os.Signal, 2)
 		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
 		errc <- fmt.Errorf("%s", <-c)
 	}()
