@@ -36,10 +36,6 @@ func setUpLogger(c *cli.Context) {
 	}
 }
 
-func helloWorld() string {
-	return "Hello World"
-}
-
 func createApp() *app.App {
 	cliApp := app.New()
 	cliApp.Name = "go-analyze-git"
