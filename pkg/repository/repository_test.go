@@ -49,3 +49,17 @@ func TestTopKReposByEvents(t *testing.T) {
 	assert.Equal(cache, expected)
 	assert.Nil(err)
 }
+
+func BenchmarkTopKReposByEvents(b *testing.B) {
+
+	b.ReportAllocs()
+	b.ResetTimer()
+	repos := New()
+	count := 10
+	event := events.Watch
+	eventsFile := "../../data/events.csv"
+	reposFile := "../../data/repos.csv"
+	for i := 0; i < b.N; i++ {
+		repos.topKReposByEvents(count, event, eventsFile, reposFile)
+	}
+}

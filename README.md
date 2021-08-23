@@ -64,5 +64,14 @@ GLOBAL OPTIONS:
 
 2. To print in json format
     ```bash
-        go-analyze-git repository tw --events-file ./data/events.csv --repos-file ./data/repos.csv  --json | jq
+    go-analyze-git repository tw --events-file ./data/events.csv --repos-file ./data/repos.csv  --json | jq
     ```
+
+
+## Benchmarks:
+   To run benchmarks simply use:
+   ```
+   go test   -cpuprofile cpu.prof -memprofile mem.prof -bench BenchmarkTopKReposByEvents ./pkg/repository/
+   go tool pprof mem.prof
+   go tool pprof cpu.prof
+   ```

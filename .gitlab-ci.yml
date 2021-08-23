@@ -16,4 +16,5 @@ test:
   stage: test
   script:
     - make test
-    - ./bin/golangci-lint run ./...
+    # Skip linting tests
+    - ./bin/golangci-lint run ./... --tests=false
