@@ -26,6 +26,7 @@ import (
 	"bufio"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v2"
@@ -57,7 +58,7 @@ func (r *Repository) topKReposByEvents(count int, event, eventsFile, reposFile s
 	// Read repos file
 	reposChan := make(chan string, 10)
 	errReposChan := make(chan error)
-	fops := fileops.NewWithBufSize(128 * 1024)
+	fops := fileops.NewWithBufSize(70 * 1024)
 	go fops.ReadFileStreaming(reposFile, reposChan, errReposChan, bufio.ScanLines)
 
 	// Read events file
@@ -121,8 +122,9 @@ func (r *Repository) CmdTopKReposByCommits() *cli.Command {
 }
 
 func (r *Repository) CmdTopKReposByWatchEvents() *cli.Command {
+	cmdName := "topk-by-events"
 	return &cli.Command{
-		Name:    "topk-by-events",
+		Name:    cmdName,
 		Aliases: []string{"tw"},
 		Usage:   "Top K repositories sorted by events",
 		Flags: []cli.Flag{
@@ -138,6 +140,7 @@ func (r *Repository) CmdTopKReposByWatchEvents() *cli.Command {
 			eventType := c.String("event-type")
 			count := c.Int("count")
 			json := c.Bool("json")
+			start := time.Now()
 			output, err := r.topKReposByEvents(count, eventType, eventsFile, reposFile)
 			if err != nil {
 				return err
@@ -145,10 +148,12 @@ func (r *Repository) CmdTopKReposByWatchEvents() *cli.Command {
 
 			// If json, print and return
 			if json {
-				return output.ToJson(os.Stdout)
+				output.ToJson(os.Stdout) //nolint
+			} else {
+				utils.RenderTable(output, []string{"RepoID", "Count"})
 			}
 
-			utils.RenderTable(output, []string{"RepoID", "Count"})
+			log.Debug().Msgf("[%s] took %v", cmdName, time.Since(start))
 			return nil
 		},
 	}
