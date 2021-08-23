@@ -19,58 +19,55 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 package utils
 
 import (
 	"encoding/json"
 	"io"
-	"sort"
 )
 
-// GenericIntDict represents a generic map represented as key, value
-type GenericIntDict struct {
-	// UserID represents the readable user-id
-	Key string `json:"Key"`
-	// Count represents the count of Commits and PRs
-	Value int `json:"Value"`
+// GenericDict represents a generic map represented as key, value
+type GenericDict struct {
+	Key   string `json:"Key"`
+	Value int    `json:"Value"`
 }
 
-type GenericIntDictList []GenericIntDict
+type GenericDictHeap []GenericDict
 
-func (g GenericIntDictList) Len() int           { return len(g) }
-func (g GenericIntDictList) Less(i, j int) bool { return g[i].Value < g[j].Value }
-func (g GenericIntDictList) Swap(i, j int)      { g[i], g[j] = g[j], g[i] }
+func (g GenericDictHeap) Len() int           { return len(g) }
+func (g GenericDictHeap) Less(i, j int) bool { return g[i].Value < g[j].Value }
+func (g GenericDictHeap) Swap(i, j int)      { g[i], g[j] = g[j], g[i] }
 
-func (g GenericIntDictList) Take(count int) GenericIntDictList {
+func (g GenericDictHeap) Take(count int) GenericDictHeap {
 	if count < len(g) {
 		return g[0:count]
 	}
 	return g
 }
 
+func (g *GenericDictHeap) Push(x interface{}) {
+	// Push and Pop use pointer receivers because they modify the slice's length,
+	// not just its contents.
+	// Taken from https://www.tugberkugurlu.com/archive/usage-of-the-heap-data-structure-in-go-golang-with-examples
+	*g = append(*g, x.(GenericDict))
+}
+
+func (g *GenericDictHeap) Pop() interface{} {
+	// Taken from https://www.tugberkugurlu.com/archive/usage-of-the-heap-data-structure-in-go-golang-with-examples
+	old := *g
+	n := len(old)
+	x := old[n-1]
+	*g = old[0 : n-1]
+	return x
+}
+
 // Write the generated json to output
-func (g GenericIntDictList) ToJson(out io.Writer) error {
+func (g GenericDictHeap) ToJson(out io.Writer) error {
 	payload, err := json.MarshalIndent(g, "", "    ")
 	if err != nil {
 		return err
 	}
 	_, err = out.Write(payload)
 	return err
-}
-
-// Create a GenericIntDictList from a map
-func GenericIntDictListFromMap(input map[string]int) GenericIntDictList {
-	inner := []GenericIntDict{}
-	for k, v := range input {
-		inner = append(inner, GenericIntDict{
-			Key:   k,
-			Value: v,
-		})
-	}
-	return GenericIntDictList(inner)
-}
-
-// Sort the GenericIntDictList by its value
-func (g GenericIntDictList) SortByValue() {
-	sort.Sort(sort.Reverse(g))
 }

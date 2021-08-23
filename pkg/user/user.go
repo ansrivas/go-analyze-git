@@ -28,7 +28,7 @@ import (
 )
 
 // UsersByPRsAndCommits represents a list of GenericIntDict
-type UsersByPRsAndCommits []utils.GenericIntDict
+type UsersByPRsAndCommits []utils.GenericDictHeap
 
 // User struct defines all the operations related to a user
 type User struct{}

@@ -23,28 +23,42 @@
 package utils
 
 import (
-	"os"
-	"strconv"
+	"container/heap"
+	"testing"
 
-	"github.com/olekukonko/tablewriter"
+	"github.com/stretchr/testify/assert"
 )
 
-// Renders any data in a nice tabular manner
-func RenderTable(tableData GenericDictHeap, headers []string) {
-	var data [][]string
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetBorder(true)
-	table.SetAutoWrapText(false)
+func TestGenericDictListMaxHeap(t *testing.T) {
 
-	for _, row := range tableData {
-		data = append(data, []string{row.Key, strconv.Itoa(row.Value)})
+	// MinHeap
+	assert := assert.New(t)
+	h := &GenericDictHeap{}
+	heap.Init(h)
+	maxCount := 3
+	push := func(key string, value int) {
+		heap.Push(h, GenericDict{key, value})
+		if h.Len() > maxCount {
+			heap.Pop(h)
+		}
 	}
-	table.SetHeader(headers)
-	table.SetHeaderColor(
-		tablewriter.Colors{tablewriter.Bold},
-		tablewriter.Colors{tablewriter.Bold},
-	)
+	push("a", 1)
+	push("b", 3)
+	push("c", 5)
+	push("d", 3)
+	push("e", 6)
+	push("f", 4)
 
-	table.AppendBulk(data)
-	table.Render()
+	// In a minheap of size 4 after all operations
+	// we should have 3 as the minimum element
+	assert.Equal((*h)[0].Value, 4)
+
+	expectedOutput := []int{4, 5, 6}
+	i := 0
+	for h.Len() > 0 {
+		v := heap.Pop(h)
+		gd := v.(GenericDict)
+		assert.Equal(expectedOutput[i], gd.Value)
+		i += 1
+	}
 }
