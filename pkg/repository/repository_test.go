@@ -60,6 +60,6 @@ func BenchmarkTopKReposByEvents(b *testing.B) {
 	eventsFile := "../../data/events.csv"
 	reposFile := "../../data/repos.csv"
 	for i := 0; i < b.N; i++ {
-		repos.topKReposByEvents(count, event, eventsFile, reposFile)
+		repos.topKReposByEvents(count, event, eventsFile, reposFile) //nolint
 	}
 }

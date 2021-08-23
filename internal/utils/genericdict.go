@@ -37,10 +37,16 @@ type GenericIntDict struct {
 
 type GenericIntDictList []GenericIntDict
 
-func (g GenericIntDictList) Len() int                          { return len(g) }
-func (g GenericIntDictList) Less(i, j int) bool                { return g[i].Value < g[j].Value }
-func (g GenericIntDictList) Swap(i, j int)                     { g[i], g[j] = g[j], g[i] }
-func (g GenericIntDictList) Take(count int) GenericIntDictList { return g[0:count] }
+func (g GenericIntDictList) Len() int           { return len(g) }
+func (g GenericIntDictList) Less(i, j int) bool { return g[i].Value < g[j].Value }
+func (g GenericIntDictList) Swap(i, j int)      { g[i], g[j] = g[j], g[i] }
+
+func (g GenericIntDictList) Take(count int) GenericIntDictList {
+	if count < len(g) {
+		return g[0:count]
+	}
+	return g
+}
 
 // Write the generated json to output
 func (g GenericIntDictList) ToJson(out io.Writer) error {

@@ -31,7 +31,7 @@ func setUpLogger(c *cli.Context) {
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 
 	if c.Bool("debug") {
-		fmt.Fprintf(c.App.Writer, "Setting the log level to debug")
+		fmt.Fprintf(c.App.Writer, "Setting the log level to debug\n")
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	}
 }
