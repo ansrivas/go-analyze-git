@@ -34,18 +34,17 @@ func TestTopKReposByEvents(t *testing.T) {
 	assert := assert.New(t)
 
 	repos := New()
-	count := 2
+	count := 3
 	event := events.Watch
 	eventsFile := "testdata/events.csv"
 	reposFile := "testdata/repos.csv"
 	cache, err := repos.topKReposByEvents(count, event, eventsFile, reposFile)
 
-	expectedCache := make(map[string]int)
-	expectedCache["testrepo2"] = 3
-	expectedCache["testrepo1"] = 2
-	expected := utils.GenericIntDictListFromMap(expectedCache)
-	expected.SortByValue()
-
+	expected := utils.GenericDictHeap{
+		utils.GenericDict{Key: "testrepo2", Value: 3},
+		utils.GenericDict{Key: "testrepo1", Value: 2},
+		utils.GenericDict{Key: "testrepo3", Value: 1},
+	}
 	assert.Equal(cache, expected)
 	assert.Nil(err)
 }
@@ -61,5 +60,37 @@ func BenchmarkTopKReposByEvents(b *testing.B) {
 	reposFile := "../../data/repos.csv"
 	for i := 0; i < b.N; i++ {
 		repos.topKReposByEvents(count, event, eventsFile, reposFile) //nolint
+	}
+}
+
+func TestTopKReposByCommits(t *testing.T) {
+	assert := assert.New(t)
+
+	repos := New()
+	count := 3
+	eventsFile := "testdata/events.csv"
+	reposFile := "testdata/repos.csv"
+	commitsFile := "testdata/commits.csv"
+	cache, err := repos.topKReposByCommits(count, reposFile, eventsFile, commitsFile)
+
+	expected := utils.GenericDictHeap{
+		utils.GenericDict{Key: "repowithpushevent2", Value: 4},
+		utils.GenericDict{Key: "repowithpushevent1", Value: 3},
+	}
+	assert.Equal(cache, expected)
+	assert.Nil(err)
+}
+
+func BenchmarkTopKReposByCommits(b *testing.B) {
+
+	b.ReportAllocs()
+	b.ResetTimer()
+	repos := New()
+	count := 10
+	eventsFile := "../../data/events.csv"
+	reposFile := "../../data/repos.csv"
+	commitsFile := "../../data/commits.csv"
+	for i := 0; i < b.N; i++ {
+		repos.topKReposByCommits(count, reposFile, eventsFile, commitsFile) //nolint
 	}
 }

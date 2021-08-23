@@ -3,6 +3,7 @@ module gitlab.com/ansrivas/go-analyze-git
 go 1.17
 
 require (
+	github.com/oklog/run v1.1.0
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/rs/zerolog v1.23.0
 	github.com/stretchr/testify v1.7.0

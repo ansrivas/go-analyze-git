@@ -43,6 +43,8 @@ GLOBAL OPTIONS:
 
 ## Examples:
 
+git lfs pull
+
 1. To print in tabular format
     ```bash
     go-analyze-git repository topk-by-events --events-file ./data/events.csv --repos-file ./data/repos.csv 

@@ -40,6 +40,12 @@ var (
 		EnvVars:  []string{"EVENTS_FILE"},
 		Required: true,
 	}
+	CommitsFileFlag = &cli.StringFlag{
+		Name:     "commits-file",
+		Usage:    "Path to the commits.csv file",
+		EnvVars:  []string{"COMMITS_FILE"},
+		Required: true,
+	}
 	CountFlag = &cli.IntFlag{
 		Name:    "count",
 		Usage:   "Maximum count to show",

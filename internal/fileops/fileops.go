@@ -46,16 +46,13 @@ func NewWithBufSize(bufSize int) *FileOps {
 	}
 }
 
-func (f *FileOps) readFileStreaming(fname string, outputChan chan<- string, errChan chan error, splitFunc bufio.SplitFunc,
-) {
+func (f *FileOps) readFileStreaming(fname string, outputChan chan<- string, splitFunc bufio.SplitFunc) error {
 
-	defer close(errChan)
 	defer close(outputChan)
 
 	fileHandle, err := os.Open(fname)
 	if err != nil {
-		errChan <- fmt.Errorf("failed to open file at path %s with error %v", fname, err.Error())
-		return
+		return fmt.Errorf("failed to open file at path %s with error %v", fname, err.Error())
 	}
 	defer fileHandle.Close()
 
@@ -69,9 +66,9 @@ func (f *FileOps) readFileStreaming(fname string, outputChan chan<- string, errC
 	}
 
 	if err := fileReader.Err(); err != nil {
-		msg := fmt.Errorf("shouldn't see an error scanning a string %s", err.Error())
-		errChan <- msg
+		return fmt.Errorf("shouldn't see an error scanning a string %s", err.Error())
 	}
+	return nil
 }
 
 // ReadFileStreaming reads a given file path
@@ -81,6 +78,6 @@ func (f *FileOps) readFileStreaming(fname string, outputChan chan<- string, errC
 // from inside the function. DO NOT close it from outside.
 //
 // **This function is intended to be used as a Go-Routine**
-func (f *FileOps) ReadFileStreaming(fname string, outputChan chan<- string, errChan chan error, splitFunc bufio.SplitFunc) {
-	f.readFileStreaming(fname, outputChan, errChan, splitFunc)
+func (f *FileOps) ReadFileStreaming(fname string, outputChan chan<- string, splitFunc bufio.SplitFunc) error {
+	return f.readFileStreaming(fname, outputChan, splitFunc)
 }
