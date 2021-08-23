@@ -41,9 +41,12 @@ GLOBAL OPTIONS:
 ```
 
 
+## NOTE: 
+If you are running the examples from `data` folder, make sure to run `git lfs pull` first. CSV files are
+committed as `large files`.
 ## Examples:
 
-git lfs pull
+
 
 1. To print in tabular format
     ```bash
