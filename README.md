@@ -7,6 +7,8 @@ This project can be used to analyze git-data from data files exported from git.
 ## Installation:
 ```bash
 go get -u gitlab.com/ansrivas/go-analyze-git
+or 
+go install gitlab.com/ansrivas/go-analyze-git@latest
 ```
 Local Build ( check the `build` folder after running following command)
 ```
