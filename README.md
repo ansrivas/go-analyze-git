@@ -86,10 +86,22 @@ committed as `large files`.
    ./go-analyze-git --debug user topk-by-pc --events-file=./data/events.csv --commits-file=./data/commits.csv --actors-file=./data/actors.csv --count 10
    ```
 
+## Tests
+To run tests:
+   `make test`
 ## Benchmarks:
    To run benchmarks simply use:
    ```
-   go test   -cpuprofile cpu.prof -memprofile mem.prof -bench BenchmarkTopKReposByEvents ./pkg/repository/
+   go test -cpuprofile cpu.prof -memprofile mem.prof -bench BenchmarkTop ./pkg/repository/
    go tool pprof mem.prof
+   # Inside the prompt type `web`
    go tool pprof cpu.prof
+   # Inside the prompt type `web`
+
+
+   go test -cpuprofile cpu.prof -memprofile mem.prof -bench BenchmarkTop ./pkg/user/
+   go tool pprof mem.prof
+   # Inside the prompt type `web`
+   go tool pprof cpu.prof
+   # Inside the prompt type `web`
    ```
