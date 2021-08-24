@@ -8,7 +8,7 @@ This project can be used to analyze git-data from data files exported from git.
 ```bash
 go get -u gitlab.com/ansrivas/go-analyze-git
 ```
-Local Build ( check the `build` folder)
+Local Build ( check the `build` folder after running following command)
 ```
 make release
 ```
