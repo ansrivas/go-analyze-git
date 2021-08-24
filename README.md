@@ -6,7 +6,11 @@ This project can be used to analyze git-data from data files exported from git.
 
 ## Installation:
 ```bash
-go get -u github.com/ansrivas/go-analyze-git
+go get -u gitlab.com/ansrivas/go-analyze-git
+```
+Local Build ( check the `build` folder)
+```
+make release
 ```
 
 ## Usage:
@@ -41,16 +45,16 @@ GLOBAL OPTIONS:
 ```
 
 
-## NOTE: 
-If you are running the examples from `data` folder, make sure to run `git lfs pull` first. CSV files are
-committed as `large files`.
 ## Examples:
 
+### NOTE: 
+If you are running the examples from `data` folder, make sure to run `git lfs pull` first. CSV files are
+committed as `large files`.
 
 
 1. To print in tabular format
     ```bash
-    go-analyze-git repository topk-by-events --events-file ./data/events.csv --repos-file ./data/repos.csv 
+    ./go-analyze-git repository topk-by-events --events-file ./data/events.csv --repos-file ./data/repos.csv 
     +-------------------------------------+-------+
     |               REPOID                | COUNT |
     +-------------------------------------+-------+
@@ -69,9 +73,18 @@ committed as `large files`.
 
 2. To print in json format
     ```bash
-    go-analyze-git repository tw --events-file ./data/events.csv --repos-file ./data/repos.csv  --json | jq
+    ./go-analyze-git repository tw --events-file ./data/events.csv --repos-file ./data/repos.csv  --json | jq
     ```
 
+3. Top-k by commits:
+   ```
+    ./go-analyze-git --debug repository topk-by-commits --events-file ./data/events.csv --repos-file ./data/repos.csv --commits-file ./data/commits.csv
+    ```
+
+4. User operations
+   ```
+   ./go-analyze-git --debug user topk-by-pc --events-file=./data/events.csv --commits-file=./data/commits.csv --actors-file=./data/actors.csv --count 10
+   ```
 
 ## Benchmarks:
    To run benchmarks simply use:

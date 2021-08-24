@@ -164,7 +164,6 @@ func (u *User) CmdTopKUsersByPRsAndCommits() *cli.Command {
 			count := c.Int("count")
 			json := c.Bool("json")
 			start := time.Now()
-			println(actorsFile, commitsFile, eventsFile)
 			output, err := u.topKUsersByPRsAndCommits(count, actorsFile, eventsFile, commitsFile)
 			if err != nil {
 				return err
