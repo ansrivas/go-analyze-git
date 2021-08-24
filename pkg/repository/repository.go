@@ -22,13 +22,6 @@
 
 package repository
 
-import (
-	"bufio"
-
-	"github.com/rs/zerolog/log"
-	"gitlab.com/ansrivas/go-analyze-git/internal/fileops"
-)
-
 // Repository struct is responsible for all the operations on
 // repositories
 type Repository struct{}
@@ -38,18 +31,18 @@ func New() *Repository {
 	return &Repository{}
 }
 
-func executeFunc(fname string, line chan string) func() error {
-	return func() error {
-		return fileops.
-			NewWithBufSize(75*1024).
-			ReadFileStreaming(fname, line, bufio.ScanLines)
-	}
-}
+// func executeFunc(fname string, line chan string) func() error {
+// 	return func() error {
+// 		return fileops.
+// 			NewWithBufSize(75*1024).
+// 			ReadFileStreaming(fname, line, bufio.ScanLines)
+// 	}
+// }
 
-func interruptFunc(msg string) func(err error) {
-	return func(err error) {
-		if err != nil {
-			log.Error().Msgf(msg, err)
-		}
-	}
-}
+// func interruptFunc(msg string) func(err error) {
+// 	return func(err error) {
+// 		if err != nil {
+// 			log.Error().Msgf(msg, err)
+// 		}
+// 	}
+// }

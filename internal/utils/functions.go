@@ -20,45 +20,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package user
+package utils
 
 import (
-	"testing"
+	"bufio"
 
-	"github.com/stretchr/testify/assert"
-	"gitlab.com/ansrivas/go-analyze-git/internal/utils"
+	"github.com/rs/zerolog/log"
+	"gitlab.com/ansrivas/go-analyze-git/internal/fileops"
 )
 
-func TestTopKUsersByPRsAndCommits(t *testing.T) {
-	assert := assert.New(t)
-
-	user := New()
-	count := 3
-	eventsFile := "testdata/events.csv"
-	commitsFile := "testdata/commits.csv"
-	actorsFile := "testdata/actors.csv"
-	cache, err := user.topKUsersByPRsAndCommits(count, actorsFile, eventsFile, commitsFile)
-
-	expected := utils.GenericDictHeap{
-		utils.GenericDict{Key: "Apexal", Value: 5},
-		utils.GenericDict{Key: "anggi1234", Value: 4},
-		utils.GenericDict{Key: "onosendi", Value: 3},
+func ExecuteFunc(fname string, line chan string) func() error {
+	return func() error {
+		return fileops.
+			NewWithBufSize(75*1024).
+			ReadFileStreaming(fname, line, bufio.ScanLines)
 	}
-
-	assert.Equal(cache, expected)
-	assert.Nil(err)
 }
 
-func BenchmarkTopKUsersByPRsAndCommits(b *testing.B) {
-
-	b.ReportAllocs()
-	b.ResetTimer()
-	user := New()
-	count := 10
-	eventsFile := "../../data/events.csv"
-	commitsFile := "../../data/commits.csv"
-	actorsFile := "../../data/actors.csv"
-	for i := 0; i < b.N; i++ {
-		user.topKUsersByPRsAndCommits(count, actorsFile, eventsFile, commitsFile) //nolint
+func InterruptFunc(msg string) func(err error) {
+	return func(err error) {
+		if err != nil {
+			log.Error().Msgf(msg, err)
+		}
 	}
 }

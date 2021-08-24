@@ -103,19 +103,19 @@ func (r *Repository) topKReposByEvents(count int, event, eventsFile, reposFile s
 			outputChan <- result
 			return nil
 
-		}, interruptFunc("The final goroutine actor was interrupted with: %v\n"))
+		}, utils.InterruptFunc("The final goroutine actor was interrupted with: %v\n"))
 	}
 
 	{
 		g.Add(
-			executeFunc(reposFile, reposChan),
-			interruptFunc("The reposFile actor was interrupted with: %v\n"))
+			utils.ExecuteFunc(reposFile, reposChan),
+			utils.InterruptFunc("The reposFile actor was interrupted with: %v\n"))
 	}
 
 	{
 		g.Add(
-			executeFunc(eventsFile, eventsChan),
-			interruptFunc("The eventsFile actor was interrupted with: %v\n"))
+			utils.ExecuteFunc(eventsFile, eventsChan),
+			utils.InterruptFunc("The eventsFile actor was interrupted with: %v\n"))
 	}
 
 	err := g.Run()

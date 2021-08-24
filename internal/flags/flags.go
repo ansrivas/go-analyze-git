@@ -46,6 +46,12 @@ var (
 		EnvVars:  []string{"COMMITS_FILE"},
 		Required: true,
 	}
+	ActorsFileFlag = &cli.StringFlag{
+		Name:     "actors-file",
+		Usage:    "Path to the actors.csv file",
+		EnvVars:  []string{"ACTORS_FILE"},
+		Required: true,
+	}
 	CountFlag = &cli.IntFlag{
 		Name:    "count",
 		Usage:   "Maximum count to show",
